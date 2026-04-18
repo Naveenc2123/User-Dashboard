@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../redux/slices/userSlice";
 
 const EditUser = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -40,26 +42,40 @@ const EditUser = () => {
 const handleUpdate = async (e) => {
   e.preventDefault();
 
-  const res = await fetch("http://localhost:3001/users");
-  const users = await res.json();
+  try {
+    const res = await fetch("http://localhost:3001/users");
+    const users = await res.json();
 
-  const existingUser = users.find((u) => u._id === id);
+    const existingUser = users.find((u) => u._id === id);
+    if (!existingUser) return;
 
-  if (!existingUser) return;
-
-  await fetch(`http://localhost:3001/users/${existingUser.id || existingUser._id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
+    const updatedUser = {
       ...form,
-      _id: id
-    })
-  });
+      _id: id,
+      age: Number(form.age) // ✅ safer
+    };
 
-  alert("User updated successfully");
-  navigate(`/users/${id}`);
+    // ✅ API update
+    await fetch(
+      `http://localhost:3001/users/${existingUser.id || existingUser._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedUser)
+      }
+    );
+
+    // ✅ Redux update (IMPORTANT)
+    dispatch(updateUser(updatedUser));
+
+    alert("User updated successfully");
+
+    navigate(`/dashboard/users`);
+  } catch (err) {
+    console.error(err);
+  }
 };
   if (loading) return <h2>Loading...</h2>;
 

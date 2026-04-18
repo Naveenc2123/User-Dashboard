@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const UserDetails = () => {
   const { id } = useParams();
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-useEffect(() => {
-  fetch("http://localhost:3001/users")
-    .then((res) => res.json())
-    .then((data) => {
-      const foundUser = data.find((u) => u._id === id);
-      console.log("Found user:", foundUser);
-      setUser(foundUser);
-    })
-    .catch((err) => console.error(err));
-}, [id]);
+const navigate = useNavigate();
+
+const user = useSelector((state) =>
+  state.users.users.find((u) => u._id === id)
+);
 
   if (!user) return <h2>Loading...</h2>;
 

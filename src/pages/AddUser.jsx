@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../redux/slices/userSlice";
 
 const AddUser = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -55,35 +57,44 @@ const AddUser = () => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const validationErrors = validate();
+  const validationErrors = validate();
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
 
-    // POST request
+  const newUser = {
+    _id: Date.now().toString(),
+    ...form,
+    isActive: true,
+    tags: [],
+    friends: []
+  };
+
+  try {
+    // ✅ API call
     await fetch("http://localhost:3001/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-         _id: Date.now().toString(), 
-        ...form,
-        isActive: true,
-        tags: [],
-        friends: []
-      })
+      body: JSON.stringify(newUser)
     });
+
+    // ✅ Redux update (IMPORTANT)
+    dispatch(addUser(newUser));
 
     alert("User added successfully");
 
-    navigate("/users");
-  };
+    navigate("/dashboard/users"); // better route
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 return (
   <div style={styles.page}>

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { deleteUser } from "../redux/slices/userSlice";
 const UserCard = ({ user }) => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
 const handleDelete = async () => {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this user?"
@@ -10,25 +11,30 @@ const handleDelete = async () => {
 
   if (!confirmDelete) return;
 
-  // 1. Get all users
-  const res = await fetch("http://localhost:3001/users");
-  const users = await res.json();
+  try {
+    const res = await fetch("http://localhost:3001/users");
+    const users = await res.json();
 
-  // 2. Find actual user
-  const targetUser = users.find((u) => u._id === user._id);
+    const targetUser = users.find((u) => u._id === user._id);
+    if (!targetUser) return;
 
-  if (!targetUser) return;
+    // ✅ API delete
+    await fetch(
+      `http://localhost:3001/users/${targetUser.id || targetUser._id}`,
+      {
+        method: "DELETE",
+      }
+    );
 
-  // 3. Delete using real JSON Server id
-  await fetch(`http://localhost:3001/users/${targetUser.id || targetUser._id}`, {
-    method: "DELETE",
-  });
+    // ✅ Redux update (IMPORTANT)
+    dispatch(deleteUser(user._id));
 
-  alert("User deleted");
+    alert("User deleted successfully");
 
-  window.location.reload(); // simple refresh
+  } catch (err) {
+    console.error(err);
+  }
 };
-
 return (
   <div style={styles.card}>
     

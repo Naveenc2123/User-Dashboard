@@ -1,15 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
 
 const Navbar = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const handleLogout = () => {
   const confirmLogout = window.confirm("Are you sure you want to logout?");
 
   if (!confirmLogout) return;
 
-  localStorage.removeItem("isAuth");
-  localStorage.removeItem("user");
+  dispatch(logout());
 
   navigate("/login");
 };

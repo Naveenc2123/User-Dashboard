@@ -1,17 +1,37 @@
-import { useEffect, useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import {
+  fetchUsersStart,
+  fetchUsersSuccess,
+  fetchUsersFailure
+} from "../redux/slices/userSlice";
+
 const Dashboard = () => {
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    fetch("http://localhost:3001/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch((err) => console.error(err));
-  }, []);
+useEffect(() => {
+  const getUsers = async () => {
+    dispatch(fetchUsersStart());
 
-  // 📊 Calculations
+    try {
+      const res = await fetch("http://localhost:3001/users");
+      const data = await res.json();
+
+      dispatch(fetchUsersSuccess(data));
+    } catch (err) {
+      dispatch(fetchUsersFailure(err.toString()));
+    }
+  };
+
+  getUsers();
+}, [dispatch]);
+  // ✅ Get users from Redux
+  const users = useSelector((state) => state.users.users);
+
+  // 📊 Calculations (derived from Redux state)
   const totalUsers = users.length;
 
   const activeUsers = users.filter((u) => u.isActive).length;
@@ -23,45 +43,43 @@ const Dashboard = () => {
         ).toFixed(1)
       : 0;
 
-return (
-  <div style={styles.container}>
-    
-    {/* Header */}
-    <div style={styles.header}>
-      <h2 style={styles.title}>User Management Dashboard</h2>
-
-      <Navbar/>
-    </div>
-
-    {/* Stats Cards */}
-    <div style={styles.cardContainer}>
+  return (
+    <div style={styles.container}>
       
-      <div style={styles.card}>
-        <h3>Total Users</h3>
-        <p>{totalUsers}</p>
+      {/* Header */}
+      <div style={styles.header}>
+        <h2 style={styles.title}>User Management Dashboard</h2>
+        <Navbar />
       </div>
 
-      <div style={styles.card}>
-        <h3>Active Users</h3>
-        <p>{activeUsers}</p>
+      {/* Stats Cards */}
+      <div style={styles.cardContainer}>
+        
+        <div style={styles.card}>
+          <h3>Total Users</h3>
+          <p>{totalUsers}</p>
+        </div>
+
+        <div style={styles.card}>
+          <h3>Active Users</h3>
+          <p>{activeUsers}</p>
+        </div>
+
+        <div style={styles.card}>
+          <h3>Average Age</h3>
+          <p>{avgAge}</p>
+        </div>
+
       </div>
 
-      <div style={styles.card}>
-        <h3>Average Age</h3>
-        <p>{avgAge}</p>
+      {/* Nested Pages */}
+      <div style={styles.outlet}>
+        <Outlet />
       </div>
 
     </div>
-
-    {/* Nested Pages */}
-    <div style={styles.outlet}>
-      <Outlet />
-    </div>
-
-  </div>
-);
+  );
 };
-
 const styles = {
   container: {
     padding: "30px",
@@ -122,5 +140,4 @@ const styles = {
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
   }
 };
-
 export default Dashboard;

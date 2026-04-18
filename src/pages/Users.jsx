@@ -1,240 +1,253 @@
 import { useEffect, useState } from "react";
 import UserCard from "../components/UserCard";
 import useDebounce from "../hooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import FilterPanel from "../components/FilterPanel";
+
+import {
+  fetchUsersStart,
+  fetchUsersSuccess,
+  fetchUsersFailure
+} from "../redux/slices/userSlice";
+
+import {
+  setSearch,
+  setSort,
+  setFilter,
+  resetFilters
+} from "../redux/slices/filterSlice";
 
 const Users = () => {
-  const [users, setUsers] = useState([]);
-  const companies = [...new Set(users.map((u) => u.company))];
-const fruits = [...new Set(users.map((u) => u.favoriteFruit))];
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("");
-const [currentPage, setCurrentPage] = useState(1);
-const usersPerPage = 6;
+  const dispatch = useDispatch();
+
+  // ✅ Redux state
+  const users = useSelector((state) => state.users.users);
+
+  const {
+    search,
+    sortBy,
+    gender,
+    company,
+    fruit,
+    ageRange,
+    status
+  } = useSelector((state) => state.filters);
+
+  // ✅ Local state
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 6;
+
   const debouncedSearch = useDebounce(search, 500);
-  const [filters, setFilters] = useState({
-  gender: "all",
-  company: "all",
-  fruit: "all",
-  ageRange: "all",
-  status: "all"
-});
 
+  // ✅ Derived values
+  const companies = [...new Set(users.map((u) => u.company))];
+  const fruits = [...new Set(users.map((u) => u.favoriteFruit))];
+
+  // 🔥 Fetch users
   useEffect(() => {
-    fetch("http://localhost:3001/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch((err) => console.error(err));
-  }, []);
+    const getUsers = async () => {
+      dispatch(fetchUsersStart());
 
-useEffect(() => {
-  setCurrentPage(1);
-}, [debouncedSearch, sortBy, filters]);
+      try {
+        const res = await fetch("http://localhost:3001/users");
+        const data = await res.json();
+
+        dispatch(fetchUsersSuccess(data));
+      } catch (err) {
+        dispatch(fetchUsersFailure(err.toString()));
+      }
+    };
+
+    getUsers();
+  }, [dispatch]);
+
+  // ✅ Reset page on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, sortBy, gender, company, fruit, ageRange, status]);
+
   // 🔍 Filter users
-const filteredUsers = users
-  .filter((user) => {
-    const value = debouncedSearch.toLowerCase();
+  const filteredUsers = users
+    .filter((user) => {
+      const value = debouncedSearch.toLowerCase();
 
-    return (
-      user.name.toLowerCase().includes(value) ||
-      user.email.toLowerCase().includes(value) ||
-      user.company.toLowerCase().includes(value)
-    );
-  })
-  .filter((user) => {
-    // Gender
-    if (filters.gender !== "all" && user.gender !== filters.gender) {
-      return false;
-    }
+      return (
+        user.name.toLowerCase().includes(value) ||
+        user.email.toLowerCase().includes(value) ||
+        user.company.toLowerCase().includes(value)
+      );
+    })
+    .filter((user) => {
+      if (gender !== "all" && user.gender !== gender) return false;
+      if (company !== "all" && user.company !== company) return false;
+      if (fruit !== "all" && user.favoriteFruit !== fruit) return false;
 
-    // Company
-    if (filters.company !== "all" && user.company !== filters.company) {
-      return false;
-    }
+      if (status !== "all") {
+        const isActive = status === "active";
+        if (user.isActive !== isActive) return false;
+      }
 
-    // Fruit
-    if (filters.fruit !== "all" && user.favoriteFruit !== filters.fruit) {
-      return false;
-    }
+      if (ageRange !== "all") {
+        if (ageRange === "18-25" && !(user.age >= 18 && user.age <= 25)) return false;
+        if (ageRange === "26-35" && !(user.age >= 26 && user.age <= 35)) return false;
+        if (ageRange === "36-50" && !(user.age >= 36 && user.age <= 50)) return false;
+        if (ageRange === "50+" && !(user.age > 50)) return false;
+      }
 
-    // Status
-    if (filters.status !== "all") {
-      const isActive = filters.status === "active";
-      if (user.isActive !== isActive) return false;
-    }
+      return true;
+    });
 
-    // Age Range
-    if (filters.ageRange !== "all") {
-      if (filters.ageRange === "18-25" && !(user.age >= 18 && user.age <= 25)) return false;
-      if (filters.ageRange === "26-35" && !(user.age >= 26 && user.age <= 35)) return false;
-      if (filters.ageRange === "36-50" && !(user.age >= 36 && user.age <= 50)) return false;
-      if (filters.ageRange === "50+" && !(user.age > 50)) return false;
-    }
-
-    return true;
-  });
+  // 🔃 Sort
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-  if (sortBy === "name") {
-    return a.name.localeCompare(b.name);
-  }
-  if (sortBy === "age") {
-    return a.age - b.age;
-  }
-  if (sortBy === "company") {
-    return a.company.localeCompare(b.company);
-  }
-  return 0;
-});
-const indexOfLast = currentPage * usersPerPage;
-const indexOfFirst = indexOfLast - usersPerPage;
+    if (sortBy === "name") return a.name.localeCompare(b.name);
+    if (sortBy === "age") return a.age - b.age;
+    if (sortBy === "company") return a.company.localeCompare(b.company);
+    return 0;
+  });
 
-const currentUsers = sortedUsers.slice(indexOfFirst, indexOfLast);
+  // 📄 Pagination
+  const indexOfLast = currentPage * usersPerPage;
+  const indexOfFirst = indexOfLast - usersPerPage;
 
-const totalPages = Math.ceil(sortedUsers.length / usersPerPage);
-return (
-  <div style={styles.page}>
-    
-    <h2 style={styles.title}>Users Management</h2>
+  const currentUsers = sortedUsers.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(sortedUsers.length / usersPerPage);
 
-    {/* Search + Sort */}
-    <div style={styles.topBar}>
-      <input
-        type="text"
-        placeholder="Search users..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={styles.input}
-      />
+  return (
+    <div style={styles.page}>
+      <h2 style={styles.title}>Users Management</h2>
 
-      <select
-        value={sortBy}
-        onChange={(e) => setSortBy(e.target.value)}
-        style={styles.select}
-      >
-        <option value="">Sort By</option>
-        <option value="name">Name</option>
-        <option value="age">Age</option>
-        <option value="company">Company</option>
-      </select>
-    </div>
-
-    {/* Filters */}
-    <div style={styles.filterBox}>
-      <h4>Filters</h4>
-
-      <div style={styles.filterRow}>
+      {/* Search + Sort */}
+      <div style={styles.topBar}>
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={search}
+          onChange={(e) => dispatch(setSearch(e.target.value))}
+          style={styles.input}
+        />
 
         <select
-  value={filters.gender}
-  onChange={(e) => setFilters({ ...filters, gender: e.target.value })}
-  style={styles.select}
->
-          <option value="all">All Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
+          value={sortBy}
+          onChange={(e) => dispatch(setSort(e.target.value))}
+          style={styles.select}
+        >
+          <option value="">Sort By</option>
+          <option value="name">Name</option>
+          <option value="age">Age</option>
+          <option value="company">Company</option>
         </select>
+      </div>
+      
+      {/* Filters */}
+      <div style={styles.filterBox}>
+        <h4>Filters</h4>
 
-        <select
-  value={filters.company}
-  onChange={(e) => setFilters({ ...filters, company: e.target.value })}
-  style={styles.select}
->
-          <option value="all">All Companies</option>
-          {companies.map((c, i) => (
-            <option key={i} value={c}>{c}</option>
-          ))}
-        </select>
+        <div style={styles.filterRow}>
+          <select
+            value={gender}
+            onChange={(e) => dispatch(setFilter({ gender: e.target.value }))}
+            style={styles.select}
+          >
+            <option value="all">All Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
 
-        <select
-  value={filters.fruit}
-  onChange={(e) => setFilters({ ...filters, fruit: e.target.value })}
-  style={styles.select}
->
-          <option value="all">All Fruits</option>
-          {fruits.map((f, i) => (
-            <option key={i} value={f}>{f}</option>
-          ))}
-        </select>
+          <select
+            value={company}
+            onChange={(e) => dispatch(setFilter({ company: e.target.value }))}
+            style={styles.select}
+          >
+            <option value="all">All Companies</option>
+            {companies.map((c, i) => (
+              <option key={i} value={c}>{c}</option>
+            ))}
+          </select>
 
-        <select
-  value={filters.ageRange}
-  onChange={(e) => setFilters({ ...filters, ageRange: e.target.value })}
-  style={styles.select}
->
-          <option value="all">All Ages</option>
-          <option value="18-25">18 - 25</option>
-          <option value="26-35">26 - 35</option>
-          <option value="36-50">36 - 50</option>
-          <option value="50+">50+</option>
-        </select>
+          <select
+            value={fruit}
+            onChange={(e) => dispatch(setFilter({ fruit: e.target.value }))}
+            style={styles.select}
+          >
+            <option value="all">All Fruits</option>
+            {fruits.map((f, i) => (
+              <option key={i} value={f}>{f}</option>
+            ))}
+          </select>
 
-        <select
-  value={filters.status}
-  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-  style={styles.select}
->
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+          <select
+            value={ageRange}
+            onChange={(e) => dispatch(setFilter({ ageRange: e.target.value }))}
+            style={styles.select}
+          >
+            <option value="all">All Ages</option>
+            <option value="18-25">18 - 25</option>
+            <option value="26-35">26 - 35</option>
+            <option value="36-50">36 - 50</option>
+            <option value="50+">50+</option>
+          </select>
 
-        <button onClick={() =>
-  setFilters({
-    gender: "all",
-    company: "all",
-    fruit: "all",
-    ageRange: "all",
-    status: "all"
-  })
-} style={styles.resetBtn}>
-          Reset
+          <select
+            value={status}
+            onChange={(e) => dispatch(setFilter({ status: e.target.value }))}
+            style={styles.select}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+
+          <button onClick={() => dispatch(resetFilters())} style={styles.resetBtn}>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {/* 🔥 useReducer Demo Component */}
+      <div style={styles.filterBox}>
+        <h4>useReducer Demo (Local State)</h4>
+        <FilterPanel companies={companies} />
+      </div>
+
+      {/* Cards */}
+      <div style={styles.grid}>
+        {currentUsers.map((user) => (
+          <UserCard key={user._id} user={user} />
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div style={styles.pagination}>
+        <button
+          style={styles.pageBtn}
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+        >
+          Prev
         </button>
 
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            style={{
+              ...styles.pageBtn,
+              background: currentPage === i + 1 ? "#667eea" : "white",
+              color: currentPage === i + 1 ? "white" : "black"
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button
+          style={styles.pageBtn}
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+        >
+          Next
+        </button>
       </div>
     </div>
-
-    {/* Cards */}
-    <div style={styles.grid}>
-      {currentUsers.map((user) => (
-        <UserCard key={user._id} user={user} />
-      ))}
-    </div>
-
-    {/* Pagination */}
-    <div style={styles.pagination}>
-
-  <button
-    style={styles.pageBtn}
-    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-  >
-    Prev
-  </button>
-
-  {[...Array(totalPages)].map((_, i) => (
-    <button
-      key={i}
-      onClick={() => setCurrentPage(i + 1)}
-      style={{
-        ...styles.pageBtn,
-        background: currentPage === i + 1 ? "#667eea" : "white",
-        color: currentPage === i + 1 ? "white" : "black",
-        fontWeight: currentPage === i + 1 ? "bold" : "normal"
-      }}
-    >
-      {i + 1}
-    </button>
-  ))}
-
-  <button
-    style={styles.pageBtn}
-    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-  >
-    Next
-  </button>
-
-</div>
-
-  </div>
-);
+  );
 };
 const styles = {
   page: {
