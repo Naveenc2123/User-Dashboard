@@ -80,94 +80,119 @@ const handleUpdate = async (e) => {
   if (loading) return <h2>Loading...</h2>;
 
 return (
-  <div style={styles.page}>
+  <div className="p-4 sm:p-6">
 
-    <div style={styles.card}>
+    {/* Card */}
+    <div className="bg-white rounded-2xl shadow-md p-6 max-w-3xl mx-auto">
+
+      <h2 className="text-xl font-semibold mb-6 text-center">
+        Edit User
+      </h2>
+
+      <form onSubmit={handleUpdate} className="space-y-4">
+
+        {/* Name + Email */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Name"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <input
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+        </div>
+
+        {/* Phone */}
+        <input
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          placeholder="Phone"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+        />
+
+        {/* Company + Age */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input
+            name="company"
+            value={form.company}
+            onChange={handleChange}
+            placeholder="Company"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <input
+            name="age"
+            type="number"
+            value={form.age}
+            onChange={handleChange}
+            placeholder="Age"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+        </div>
+
+        {/* Gender + Fruit */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input
+            name="gender"
+            value={form.gender}
+            onChange={handleChange}
+            placeholder="Gender"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <input
+            name="favoriteFruit"
+            value={form.favoriteFruit}
+            onChange={handleChange}
+            placeholder="Favorite Fruit"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+        </div>
+
+        {/* Address */}
+        <input
+          name="address"
+          value={form.address}
+          onChange={handleChange}
+          placeholder="Address"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+        />
+
+        {/* Location */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input
+            name="latitude"
+            value={form.latitude}
+            onChange={handleChange}
+            placeholder="Latitude"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <input
+            name="longitude"
+            value={form.longitude}
+            onChange={handleChange}
+            placeholder="Longitude"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+        </div>
+
+        {/* Submit */}
         <button
-  onClick={() => navigate("/dashboard/users")}
-  style={styles.backBtn}
->
-  ← Back to Dashboard
-</button>
-      <h2 style={styles.title}>Edit User</h2>
-
-      <form onSubmit={handleUpdate} style={styles.form}>
-
-        {Object.keys(form).map((key) => (
-          key !== "id" && (
-            <input
-              key={key}
-              name={key}
-              value={form[key]}
-              onChange={handleChange}
-              placeholder={key}
-              style={styles.input}
-            />
-          )
-        ))}
-
-        <button type="submit" style={styles.button}>
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition"
+        >
           Update User
         </button>
 
       </form>
     </div>
-
   </div>
 );
-};
-const styles = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f4f6f9",
-    fontFamily: "Arial"
-  },
-
-  card: {
-    width: "450px",
-    background: "white",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
-  },
-
-  title: {
-    textAlign: "center",
-    marginBottom: "15px"
-  },
-
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px"
-  },
-
-  input: {
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ccc"
-  },
-
-  button: {
-    padding: "10px",
-    background: "#667eea",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer"
-  },
-  backBtn: {
-  marginBottom: "15px",
-  padding: "8px 12px",
-  border: "none",
-  background: "#667eea",
-  color: "white",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontWeight: "bold"
-}
 };
 export default EditUser;

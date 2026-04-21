@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   fetchUsersStart,
   fetchUsersSuccess,
@@ -11,7 +12,7 @@ import {
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-
+  const location = useLocation();
 useEffect(() => {
   const getUsers = async () => {
     dispatch(fetchUsersStart());
@@ -43,101 +44,49 @@ useEffect(() => {
         ).toFixed(1)
       : 0;
 
-  return (
-    <div style={styles.container}>
-      
-      {/* Header */}
-      <div style={styles.header}>
-        <h2 style={styles.title}>User Management Dashboard</h2>
-        <Navbar />
-      </div>
+return (
+  <div className="min-h-screen bg-gray-100">
 
-      {/* Stats Cards */}
-      <div style={styles.cardContainer}>
-        
-        <div style={styles.card}>
-          <h3>Total Users</h3>
-          <p>{totalUsers}</p>
+    {/* ✅ Navbar */}
+    <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-white shadow sticky top-0 z-50">
+      <h2 className="text-lg sm:text-xl font-semibold">
+        User Management
+      </h2>
+      <Navbar />
+    </div>
+
+    {/* ✅ Main Content */}
+    <div className="p-4 sm:p-6">
+
+      {/* ✅ Stats Cards (only dashboard home) */}
+      {location.pathname === "/dashboard" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+
+          <div className="bg-white p-5 rounded-xl shadow text-center">
+            <h3 className="text-gray-500 text-sm">Total Users</h3>
+            <p className="text-2xl font-bold mt-2">{totalUsers}</p>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl shadow text-center">
+            <h3 className="text-gray-500 text-sm">Active Users</h3>
+            <p className="text-2xl font-bold mt-2">{activeUsers}</p>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl shadow text-center">
+            <h3 className="text-gray-500 text-sm">Average Age</h3>
+            <p className="text-2xl font-bold mt-2">{avgAge}</p>
+          </div>
+
         </div>
+      )}
 
-        <div style={styles.card}>
-          <h3>Active Users</h3>
-          <p>{activeUsers}</p>
-        </div>
-
-        <div style={styles.card}>
-          <h3>Average Age</h3>
-          <p>{avgAge}</p>
-        </div>
-
-      </div>
-
-      {/* Nested Pages */}
-      <div style={styles.outlet}>
+      {/* ✅ Full Page Content */}
+      <div className="w-full">
         <Outlet />
       </div>
 
     </div>
-  );
-};
-const styles = {
-  container: {
-    padding: "30px",
-    fontFamily: "Arial",
-    background: "#f4f6f9",
-    minHeight: "100vh"
-  },
-
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "20px"
-  },
-
-  title: {
-    margin: 0,
-    color: "#333"
-  },
-
-  nav: {
-    display: "flex",
-    gap: "15px"
-  },
-
-  link: {
-    textDecoration: "none",
-    padding: "8px 12px",
-    background: "#667eea",
-    color: "white",
-    borderRadius: "6px",
-    fontSize: "14px"
-  },
-
-  cardContainer: {
-    display: "flex",
-    gap: "20px",
-    marginTop: "20px",
-    flexWrap: "wrap"
-  },
-
-  card: {
-    flex: "1",
-    minWidth: "180px",
-    background: "white",
-    padding: "20px",
-    borderRadius: "12px",
-    textAlign: "center",
-    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-    transition: "0.3s"
-  },
-
-  outlet: {
-    marginTop: "30px",
-    background: "white",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
-  }
+  </div>
+);
 };
 export default Dashboard;

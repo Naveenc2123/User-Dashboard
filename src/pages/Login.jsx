@@ -57,71 +57,49 @@ const Login = () => {
     }
   };
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Welcome Back 👋</h2>
-        <p style={styles.subtitle}>Login to your dashboard</p>
+return (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 px-4">
+    
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+      
+      {/* Title */}
+      <h2 className="text-2xl font-bold text-center mb-2">
+        Welcome Back 👋
+      </h2>
 
-        <form onSubmit={handleLogin} style={styles.form}>
-          <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-          />
+      <p className="text-sm text-gray-500 text-center mb-6">
+        Login to your dashboard
+      </p>
 
-          <input
-            type="password"
-            placeholder="Enter Password (favorite fruit)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-          />
+      {/* Form */}
+      <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        
+        <input
+          type="email"
+          placeholder="Enter Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
+        />
 
-          <button type="submit" style={styles.button}>
-            Login
-          </button>
-        </form>
-      </div>
+        <input
+          type="password"
+          placeholder="Enter Password (favorite fruit)"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
+        />
+
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 active:scale-95 transition"
+        >
+          Login
+        </button>
+
+      </form>
     </div>
-  );
-};
-const styles = {
-  container: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
-    fontFamily: "Arial",
-  },
-  card: {
-    background: "white",
-    padding: "40px",
-    borderRadius: "12px",
-    width: "350px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-    textAlign: "center",
-  },
-  title: { marginBottom: "5px" },
-  subtitle: { fontSize: "14px", color: "gray", marginBottom: "20px" },
-  form: { display: "flex", flexDirection: "column", gap: "12px" },
-  input: {
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    outline: "none",
-  },
-  button: {
-    padding: "10px",
-    background: "#667eea",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
+  </div>
+);
 };
 export default Login;

@@ -36,110 +36,70 @@ const handleDelete = async () => {
   }
 };
 return (
-  <div style={styles.card}>
-    
+  <div className="bg-white rounded-2xl shadow-md p-5 text-center hover:shadow-lg transition">
+
+    {/* Avatar */}
     <img
       src={user.profilePic}
       alt={user.name}
-      style={styles.image}
       onError={(e) => {
         e.target.src = "https://via.placeholder.com/80";
       }}
+      className="w-20 h-20 rounded-full object-cover mx-auto mb-3"
     />
 
-    <h3 style={styles.name}>{user.name}</h3>
-    <p style={styles.text}>{user.email}</p>
-    <p style={styles.text}>{user.company}</p>
+    {/* Name */}
+    <h3 className="font-semibold text-lg">{user.name}</h3>
 
-    <div style={styles.age}>Age: {user.age}</div>
+    {/* Email */}
+    <p className="text-sm text-gray-500">{user.email}</p>
 
-    <div style={styles.btnGroup}>
-      <button onClick={() => navigate(`/users/${user._id}`)} style={styles.view}>
+    {/* Company */}
+    <p className="text-sm text-gray-500">{user.company}</p>
+
+    {/* Age + Status */}
+    <div className="flex items-center justify-center gap-2 mt-2">
+      <span className="text-sm font-medium">Age: {user.age}</span>
+
+      <span
+        className={`text-xs px-2 py-1 rounded-full ${
+          user.isActive
+            ? "bg-green-100 text-green-600"
+            : "bg-red-100 text-red-600"
+        }`}
+      >
+        {user.isActive ? "Active" : "Inactive"}
+      </span>
+    </div>
+
+    {/* Buttons */}
+    <div className="flex justify-center gap-2 mt-4 flex-wrap">
+
+      <button
+        onClick={() => navigate(`/dashboard/users/${user._id}`)}
+        className="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-blue-600 transition"
+      >
         View
       </button>
 
-      <button onClick={() => navigate(`/edit-user/${user._id}`)} style={styles.edit}>
+      <button
+        onClick={() => navigate(`/dashboard/edit-user/${user._id}`)}
+        className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-600 transition"
+      >
         Edit
       </button>
 
-      <button onClick={handleDelete} style={styles.delete}>
+      <button
+        onClick={handleDelete}
+        className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+      >
         Delete
       </button>
-    </div>
 
+    </div>
   </div>
 );
 };
 
-const styles = {
-  card: {
-    width: "220px",
-    padding: "15px",
-    borderRadius: "12px",
-    background: "white",
-    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-    textAlign: "center",
-    transition: "0.3s"
-  },
-
-  image: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "50%",
-    objectFit: "cover",
-    marginBottom: "10px"
-  },
-
-  name: {
-    margin: "5px 0"
-  },
-
-  text: {
-    fontSize: "13px",
-    color: "gray",
-    margin: "2px 0"
-  },
-
-  age: {
-    marginTop: "5px",
-    fontWeight: "bold"
-  },
-
-  btnGroup: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "10px"
-  },
-
-  view: {
-    background: "#3b82f6",
-    color: "white",
-    border: "none",
-    padding: "6px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "12px"
-  },
-
-  edit: {
-    background: "#10b981",
-    color: "white",
-    border: "none",
-    padding: "6px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "12px"
-  },
-
-  delete: {
-    background: "#ef4444",
-    color: "white",
-    border: "none",
-    padding: "6px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "12px"
-  }
-};
 
 export default UserCard;

@@ -97,48 +97,123 @@ const handleSubmit = async (e) => {
 };
 
 return (
-  <div style={styles.page}>
-    <div style={styles.card}>
-      <h2 style={styles.title}>Add New User</h2>
+   <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
+    
+    <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-6 sm:p-8 mx-auto">
+      
+      <h2 className="text-xl sm:text-2xl font-semibold text-center mb-6">
+        Add New User
+      </h2>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-        <div style={styles.row}>
-          <input name="name" placeholder="Name" onChange={handleChange} style={styles.input} />
-          <p style={styles.error}>{errors.name}</p>
+        {/* Name */}
+        <div>
+          <input
+            name="name"
+            placeholder="Name"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
 
-        <div style={styles.row}>
-          <input name="email" placeholder="Email" onChange={handleChange} style={styles.input} />
-          <p style={styles.error}>{errors.email}</p>
+        {/* Email */}
+        <div>
+          <input
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
 
-        <div style={styles.row}>
-          <input name="phone" placeholder="Phone" onChange={handleChange} style={styles.input} />
-          <p style={styles.error}>{errors.phone}</p>
+        {/* Phone */}
+        <div>
+          <input
+            name="phone"
+            placeholder="Phone"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
         </div>
 
-        <div style={styles.grid}>
-          <input name="company" placeholder="Company" onChange={handleChange} style={styles.input} />
-          <input name="age" type="number" placeholder="Age" onChange={handleChange} style={styles.input} />
+        {/* Company + Age */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input
+            name="company"
+            placeholder="Company"
+            onChange={handleChange}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+
+          <div>
+            <input
+              name="age"
+              type="number"
+              placeholder="Age"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+            />
+            {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
+          </div>
         </div>
-        <p style={styles.error}>{errors.age}</p>
 
-        <div style={styles.grid}>
-          <input name="gender" placeholder="Gender" onChange={handleChange} style={styles.input} />
-          <input name="favoriteFruit" placeholder="Favorite Fruit" onChange={handleChange} style={styles.input} />
+        {/* Gender + Fruit */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input
+            name="gender"
+            placeholder="Gender"
+            onChange={handleChange}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+
+          <input
+            name="favoriteFruit"
+            placeholder="Favorite Fruit"
+            onChange={handleChange}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
         </div>
 
-        <input name="address" placeholder="Address" onChange={handleChange} style={styles.input} />
+        {/* Address */}
+        <input
+          name="address"
+          placeholder="Address"
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+        />
 
-        <div style={styles.grid}>
-          <input name="latitude" placeholder="Latitude" onChange={handleChange} style={styles.input} />
-          <input name="longitude" placeholder="Longitude" onChange={handleChange} style={styles.input} />
+        {/* Latitude + Longitude */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input
+            name="latitude"
+            placeholder="Latitude"
+            onChange={handleChange}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+
+          <input
+            name="longitude"
+            placeholder="Longitude"
+            onChange={handleChange}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
         </div>
 
-        <p style={styles.error}>{errors.latitude || errors.longitude}</p>
+        {(errors.latitude || errors.longitude) && (
+          <p className="text-red-500 text-xs">
+            {errors.latitude || errors.longitude}
+          </p>
+        )}
 
-        <button type="submit" style={styles.button}>
+        {/* Submit */}
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 active:scale-95 transition"
+        >
           Add User
         </button>
 
@@ -146,67 +221,5 @@ return (
     </div>
   </div>
 );
-};
-const styles = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f4f6f9",
-    fontFamily: "Arial"
-  },
-
-  card: {
-    width: "450px",
-    background: "white",
-    padding: "25px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
-  },
-
-  title: {
-    textAlign: "center",
-    marginBottom: "20px"
-  },
-
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px"
-  },
-
-  row: {
-    display: "flex",
-    flexDirection: "column"
-  },
-
-  grid: {
-    display: "flex",
-    gap: "10px"
-  },
-
-  input: {
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    outline: "none"
-  },
-
-  button: {
-    padding: "12px",
-    background: "#667eea",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "bold"
-  },
-
-  error: {
-    color: "red",
-    fontSize: "12px",
-    marginTop: "3px"
-  }
 };
 export default AddUser;
